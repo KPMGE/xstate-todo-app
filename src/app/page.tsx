@@ -6,7 +6,7 @@ export default function Home() {
   const [state, send] = useMachine(todosMachine, {
     services: {
       fetchTodos: () => new Promise((resolve, reject) => {
-        setTimeout(() => resolve(['todo1, ', 'todo 2']), 1000)
+        setTimeout(() => resolve(['todo1', 'todo 2']), 1000)
       })
     },
   })
@@ -14,22 +14,12 @@ export default function Home() {
   return (
     <div>
       <pre>
-        {JSON.stringify(state.value)}
+        STATE: {JSON.stringify(state.value)}
       </pre>
 
-      <button
-        onClick={() => send('Todos loaded')}
-      >
-        todos loaded
-      </button>
-
-      <br />
-
-      <button
-        onClick={() => send('Loading todos failed')}
-      >
-        Loading todos failed
-      </button>
+      <pre>
+        CONTEXT: {JSON.stringify(state.context)}
+      </pre>
     </div>
   )
 }

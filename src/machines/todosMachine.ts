@@ -1,9 +1,13 @@
-import { createMachine } from "xstate";
+import { createMachine, assign } from "xstate";
 
 export const todosMachine = createMachine(
   {
     id: "Todos machine",
     initial: "Loading todos",
+    context: {
+      todos: [] as string[],
+      errorMessage: undefined
+    },
     states: {
       "Loading todos": {
         invoke: {
@@ -12,11 +16,13 @@ export const todosMachine = createMachine(
           onDone: [
             {
               target: "Todos Loaded successfully",
+              actions: 'assignTodosToContext'
             },
           ],
           onError: [
             {
               target: "Load todos failed",
+              actions: 'assignErrorToContext'
             },
           ],
         },
@@ -26,7 +32,7 @@ export const todosMachine = createMachine(
     },
     schema: {
       services: {} as {
-        'loadTodos': {
+        fetchTodos: {
           data: string[]
         }
       }
@@ -35,7 +41,18 @@ export const todosMachine = createMachine(
     preserveActionOrder: true,
   },
   {
-    actions: {},
+    actions: {
+      assignTodosToContext: assign((context, event) => {
+        return {
+          todos: event.data
+        }
+      }),
+      assignErrorToContext: assign((context, event) => {
+        return {
+          errorMessage: (event.data as Error).message
+        }
+      })
+    },
     guards: {},
     delays: {},
   },
