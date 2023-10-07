@@ -6,26 +6,37 @@ export const todosMachine = createMachine(
     initial: "Loading todos",
     states: {
       "Loading todos": {
-        on: {
-          "Todos loaded": {
-            target: "Todos Loaded successfully",
-          },
-          "Loading todos failed": {
-            target: "Load todos failed",
-          },
+        invoke: {
+          src: "fetchTodos",
+          id: "fetchTodos",
+          onDone: [
+            {
+              target: "Todos Loaded successfully",
+            },
+          ],
+          onError: [
+            {
+              target: "Load todos failed",
+            },
+          ],
         },
       },
       "Todos Loaded successfully": {},
       "Load todos failed": {},
     },
-    schema: { events: {} as { type: "Todos loaded" } | { type: "Loading todos failed" } },
+    schema: {
+      services: {} as {
+        'loadTodos': {
+          data: string[]
+        }
+      }
+    },
     predictableActionArguments: true,
     preserveActionOrder: true,
   },
   {
     actions: {},
-    services: {},
     guards: {},
     delays: {},
   },
-);
+)
