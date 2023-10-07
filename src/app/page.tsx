@@ -1,9 +1,9 @@
 'use client'
 import { useMachine } from "@xstate/react"
-import { machine } from "../machines/firstMachine"
+import { todosMachine } from "../machines"
 
 export default function Home() {
-  const [state, send] = useMachine(machine)
+  const [state, send] = useMachine(todosMachine)
 
   return (
     <div>
@@ -12,17 +12,17 @@ export default function Home() {
       </pre>
 
       <button
-        onClick={() => send({ type: 'HOVER' })}
+        onClick={() => send('Todos loaded')}
       >
-        TRIGGER HOVER EVENT
+        todos loaded
       </button>
 
       <br />
 
       <button
-        onClick={() => send({ type: 'MOUSEOUT' })}
+        onClick={() => send('Loading todos failed')}
       >
-        TRIGGER MOUSEOUT EVENT
+        Loading todos failed
       </button>
     </div>
   )
