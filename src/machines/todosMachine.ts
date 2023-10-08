@@ -6,7 +6,8 @@ export const todosMachine = createMachine(
     initial: "Loading todos",
     context: {
       todos: [] as string[],
-      errorMessage: undefined
+      errorMessage: undefined,
+      createTodoFormInput: ''
     },
     states: {
       "Loading todos": {
@@ -27,14 +28,42 @@ export const todosMachine = createMachine(
           ],
         },
       },
-      "Todos Loaded successfully": {},
+      "Todos Loaded successfully": {
+        on: {
+          "Create new todo": {
+            target: "Creating new todo"
+          }
+        }
+      },
       "Load todos failed": {},
+      "Creating new todo": {
+        initial: "Showing form input",
+        states: {
+          "Showing form input": {
+            on: {
+              "Form Input Changed": {
+                actions: {
+                  type: "assignFormInputToContext",
+                },
+                internal: true,
+              },
+            },
+          },
+        },
+      },
+
     },
     schema: {
       services: {} as {
         fetchTodos: {
           data: string[]
         }
+      },
+      events: {} as {
+        type: "Create new todo"
+      } | {
+        type: "Form Input Changed"
+        value: string
       }
     },
     predictableActionArguments: true,
@@ -42,14 +71,19 @@ export const todosMachine = createMachine(
   },
   {
     actions: {
-      assignTodosToContext: assign((context, event) => {
+      assignTodosToContext: assign((_context, event) => {
         return {
           todos: event.data
         }
       }),
-      assignErrorToContext: assign((context, event) => {
+      assignErrorToContext: assign((_context, event) => {
         return {
           errorMessage: (event.data as Error).message
+        }
+      }),
+      assignFormInputToContext: assign((_context, event) => {
+        return {
+          createTodoFormInput: event.value
         }
       })
     },
