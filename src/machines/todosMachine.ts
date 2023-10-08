@@ -17,8 +17,12 @@ export const todosMachine = createMachine(
           onDone: [
             {
               target: "Todos Loaded successfully",
-              actions: 'assignTodosToContext'
+              actions: 'assignTodosToContext',
+              cond: "Has Todos"
             },
+            {
+              target: "Creating new todo",
+            }
           ],
           onError: [
             {
@@ -137,6 +141,9 @@ export const todosMachine = createMachine(
           createTodoFormInput: event.value
         }
       })
+    },
+    guards: {
+      "Has Todos": (_, event) => event.data
     }
   },
 )
