@@ -47,7 +47,27 @@ export const todosMachine = createMachine(
                 },
                 internal: true,
               },
+              "Submit": {
+                target: "Saving Todo"
+              }
             },
+          },
+          "Saving Todo": {
+            invoke: {
+              src: "saveTodo",
+              id: "Save Todo",
+              onDone: [
+                {
+                  target: "#Todos machine.Loading todos"
+                }
+              ],
+              onError: {
+                target: "Showing form input",
+                actions: {
+                  type: "assignErrorToContext"
+                }
+              }
+            }
           },
         },
       },
@@ -57,6 +77,9 @@ export const todosMachine = createMachine(
       services: {} as {
         fetchTodos: {
           data: string[]
+        },
+        saveTodo: {
+          data: void
         }
       },
       events: {} as {
@@ -64,6 +87,8 @@ export const todosMachine = createMachine(
       } | {
         type: "Form Input Changed"
         value: string
+      } | {
+        type: "Submit"
       }
     },
     predictableActionArguments: true,
@@ -86,8 +111,6 @@ export const todosMachine = createMachine(
           createTodoFormInput: event.value
         }
       })
-    },
-    guards: {},
-    delays: {},
+    }
   },
 )
