@@ -32,6 +32,9 @@ export const todosMachine = createMachine(
         on: {
           "Create new todo": {
             target: "Creating new todo"
+          },
+          "Delete Todo": {
+            target: "Deleting Todo"
           }
         }
       },
@@ -71,7 +74,24 @@ export const todosMachine = createMachine(
           },
         },
       },
-
+      "Deleting Todo": {
+        invoke: {
+          src: "deleteTodo",
+          id: "Delete Todo",
+          onDone: [
+            {
+              target: "Loading todos"
+            },
+          ],
+          onError: [
+            {
+              target: "Delete todo error",
+              actions: "assignErrorToContext"
+            }
+          ]
+        }
+      },
+      "Delete todo error": {}
     },
     schema: {
       services: {} as {
@@ -79,6 +99,9 @@ export const todosMachine = createMachine(
           data: string[]
         },
         saveTodo: {
+          data: void
+        },
+        deleteTodo: {
           data: void
         }
       },
@@ -89,6 +112,9 @@ export const todosMachine = createMachine(
         value: string
       } | {
         type: "Submit"
+      } | {
+        type: "Delete Todo",
+        value: string
       }
     },
     predictableActionArguments: true,
