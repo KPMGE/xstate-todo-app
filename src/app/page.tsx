@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import { useMachine } from "@xstate/react"
 import { todosMachine } from "../machines"
 
@@ -15,31 +16,40 @@ export default function Home() {
     },
   })
 
-  return (
-    <div>
-      <pre>
-        STATE: {JSON.stringify(state.value)}
-      </pre>
+  const isLoadingTodos = state.matches('Loading todos')
 
-      {state.context.todos.map(todo => (
-        <div key={todo} className="mb-5">
-          <span className="bg-blue-100 mr-3 p-1">{todo}</span>
-          <button className="bg-red-200" onClick={() => send({ type: 'Delete Todo', value: todo })}>Delete</button>
-        </div>
-      ))}
+  return (
+    <div className="h-screen flex flex-col items-center justify-center" >
+      {isLoadingTodos && <div>Loading todos...</div>}
 
       {state.matches('Todos Loaded successfully') &&
-        <button onClick={() => send('Create new todo')}>CREATE NEW TODO</button>
+        <button
+          className="bg-green-300 p-2 rounded-md"
+          onClick={() => send('Create new todo')}
+        >
+          CREATE NEW TODO
+        </button>
       }
+      <div className="w-[300px] flex flex-col gap-6 mt-3">
+        {!isLoadingTodos && state.context.todos.map(todo => (
+          <div className='flex justify-between bg-blue-100 p-2 rounded-md'>
+            <span className="">{todo}</span>
+            <button className="bg-red-300 px-1 rounded-sm" onClick={() => send({ type: 'Delete Todo', value: todo })}>Delete</button>
+          </div>
+        ))}
+      </div>
 
       {state.matches('Creating new todo.Showing form input') &&
-        <form onSubmit={(e) => {
-          e.preventDefault()
-          send("Submit")
-        }}>
+        <form
+          className='mt-3'
+          onSubmit={(e) => {
+            e.preventDefault()
+            send("Submit")
+          }}
+        >
           <input
-            className="border-2 border-gray-500"
-            placeholder="Enter your new todo"
+            className="w-[300px] border-2 border-gray-400 rounded-md p-2 focus:border-gray-500 outline-none"
+            placeholder="Enter the new todo"
             onChange={e => send({
               type: 'Form Input Changed',
               value: e.target.value
